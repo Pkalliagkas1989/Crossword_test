@@ -9,7 +9,7 @@ This repository provides a small crossword solver written in plain JavaScript. T
 ```javascript
 const { crosswordSolver } = require('./solver');
 const result = crosswordSolver('1..\n...', ['HI']);
-console.log(result); // prints either the filled grid or 'Error'
+console.log(result); // prints the filled grid or an error message starting with 'Error:'
 ```
 
 ### CLI
@@ -32,6 +32,7 @@ node test/test.js
 
 - `solver.js` exports the `crosswordSolver` function and contains no CLI logic.
 - `cli.js` handles command line parsing and prints the solver result.
-- The solver expects a unique solution; otherwise it returns `'Error'`.
+- The solver expects a unique solution; otherwise it returns an error string
+  starting with `'Error:'` explaining the reason.
 
 

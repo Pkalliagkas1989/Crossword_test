@@ -21,7 +21,8 @@
  * The solver must find a unique way to place every word exactly once.
  *
  * If the inputs don't guarantee a unique solution, or violate constraints,
- * it returns 'Error'. On success, it returns the filled puzzle string.
+ * it returns a string starting with 'Error:' explaining the reason. On success,
+ * it returns the filled puzzle string.
  *
  * @param {string} puzzleStr - The empty puzzle layout.
  * @param {string[]} words - List of words to fit (no duplicates).
@@ -30,12 +31,12 @@ function crosswordSolver(puzzleStr, words) {
   // Parse input
   const rows = puzzleStr.split('\n').map(line => line.split(''));
   const height = rows.length;
-  if (height === 0) return 'Error';
+  if (height === 0) return 'Error: empty puzzle';
   const width = rows[0].length;
 
   // Validate grid consistency
   for (const row of rows) {
-    if (row.length !== width) return 'Error';
+    if (row.length !== width) return 'Error: inconsistent row lengths';
   }
 
   // Utility to clone a 2D array
@@ -83,7 +84,9 @@ function crosswordSolver(puzzleStr, words) {
   }
 
   // Quick validation: word counts must match slot counts
-  if (words.length !== slots.length) return 'Error';
+  if (words.length !== slots.length) {
+    return 'Error: word/slot count mismatch';
+  }
 
   // Prepare state
   const assignments = Array(slots.length).fill(null);
@@ -146,7 +149,7 @@ function crosswordSolver(puzzleStr, words) {
     const result = finalGrid.map(r => r.join('')).join('\n');
     return result;
   }
-  return 'Error';
+  return 'Error: puzzle has no unique solution';
 }
 
 module.exports = { crosswordSolver };
