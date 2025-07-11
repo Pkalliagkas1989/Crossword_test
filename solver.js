@@ -28,10 +28,16 @@
  * @param {string[]} words - List of words to fit (no duplicates).
  */
 function crosswordSolver(puzzleStr, words) {
-  // Parse input
+  // Basic input validation
+  if (typeof puzzleStr !== 'string') return 'Error: invalid puzzle format';
+  if (!Array.isArray(words)) return 'Error: invalid words list';
+  if (puzzleStr.trim() === '') return 'Error: empty puzzle';
+  if (words.some(w => typeof w !== 'string')) return 'Error: invalid words list';
+  if (new Set(words).size !== words.length) return 'Error: duplicate words';
+
   const rows = puzzleStr.split('\n').map(line => line.split(''));
   const height = rows.length;
-  if (height === 0) return 'Error: empty puzzle';
+  if (height === 0 || rows[0].length === 0) return 'Error: empty puzzle';
   const width = rows[0].length;
 
   // Validate grid consistency
@@ -47,37 +53,35 @@ function crosswordSolver(puzzleStr, words) {
 
   const isLetterCell = (r, c) => rows[r][c] !== '.';
 
+  function scanLength(r, c, dr, dc) {
+    let len = 0;
+    while (r + len * dr < height && c + len * dc < width &&
+           rows[r + len * dr][c + len * dc] !== '.') {
+      len++;
+    }
+    return len;
+  }
+
   for (let r = 0; r < height; r++) {
     for (let c = 0; c < width; c++) {
       const cell = rows[r][c];
       if (/\d/.test(cell)) {
-        const count = parseInt(cell, 10);
-        // Check horizontal slot
-        if (count === 1 || count === 2) {
-          // rightwards
-          if (c + 1 < width && rows[r][c + 1] !== '.') {
-            let len = 0;
-            while (c + 1 + len < width && rows[r][c + 1 + len] !== '.') len++;
-            if (len > 1) slots.push({ r, c, dir: 'across', length: len });
-          }
+        const val = parseInt(cell, 10);
+        if (val > 2) return 'Error: invalid start count';
+        if (val === 0) continue;
+        // val is 1 or 2
+        const canAcross = (c === 0 || rows[r][c - 1] === '.') &&
+                          c + 1 < width && rows[r][c + 1] !== '.';
+        const canDown = (r === 0 || rows[r - 1][c] === '.') &&
+                        r + 1 < height && rows[r + 1][c] !== '.';
+
+        if (canAcross) {
+          const len = scanLength(r, c, 0, 1);
+          if (len > 1) slots.push({ r, c, dir: 'across', length: len });
         }
-        // Check vertical slot
-        if (count === 2) {
-          if (r + 1 < height && rows[r + 1][c] !== '.') {
-            let len = 0;
-            while (r + 1 + len < height && rows[r + 1 + len][c] !== '.') len++;
-            if (len > 1) slots.push({ r, c, dir: 'down', length: len });
-          }
-        } else if (count === 1) {
-          // If single start, detect if it's vertical-only: if horizontal is invalid
-          const horizOk = c + 1 < width && rows[r][c + 1] !== '.';
-          if (!horizOk) {
-            if (r + 1 < height && rows[r + 1][c] !== '.') {
-              let len = 0;
-              while (r + 1 + len < height && rows[r + 1 + len][c] !== '.') len++;
-              if (len > 1) slots.push({ r, c, dir: 'down', length: len });
-            }
-          }
+        if (canDown) {
+          const len = scanLength(r, c, 1, 0);
+          if (len > 1) slots.push({ r, c, dir: 'down', length: len });
         }
       }
     }
