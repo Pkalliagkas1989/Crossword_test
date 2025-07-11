@@ -1,18 +1,14 @@
 /**
- * crosswordSolver.js
+ * solver.js
  *
- * A production-ready, framework-free JavaScript module that solves an empty crossword puzzle.
- * It reads a string representation of the puzzle, fills in words from a provided list,
- * ensures a unique solution, and prints the filled puzzle or 'Error' otherwise.
+ * Provides crosswordSolver, a framework-free function that fills an empty crossword puzzle from a list of words.
  *
  * Usage:
- *   node crosswordSolver.js
- *   // The module exports crosswordSolver for integration or testing.
+ *   const { crosswordSolver } = require("./solver");
  *
  * @module crosswordSolver
  */
 'use strict';
-
 /**
  * Solve an empty crossword puzzle given a grid and a word list.
  * The grid is described as a string, where:
@@ -25,7 +21,7 @@
  * The solver must find a unique way to place every word exactly once.
  *
  * If the inputs don't guarantee a unique solution, or violate constraints,
- * it prints 'Error'. On success, it prints the filled puzzle string.
+ * it returns 'Error'. On success, it returns the filled puzzle string.
  *
  * @param {string} puzzleStr - The empty puzzle layout.
  * @param {string[]} words - List of words to fit (no duplicates).
@@ -34,12 +30,12 @@ function crosswordSolver(puzzleStr, words) {
   // Parse input
   const rows = puzzleStr.split('\n').map(line => line.split(''));
   const height = rows.length;
-  if (height === 0) return console.log('Error');
+  if (height === 0) return 'Error';
   const width = rows[0].length;
 
   // Validate grid consistency
   for (const row of rows) {
-    if (row.length !== width) return console.log('Error');
+    if (row.length !== width) return 'Error';
   }
 
   // Utility to clone a 2D array
@@ -87,7 +83,7 @@ function crosswordSolver(puzzleStr, words) {
   }
 
   // Quick validation: word counts must match slot counts
-  if (words.length !== slots.length) return console.log('Error');
+  if (words.length !== slots.length) return 'Error';
 
   // Prepare state
   const assignments = Array(slots.length).fill(null);
@@ -146,26 +142,11 @@ function crosswordSolver(puzzleStr, words) {
   const workingGrid = rows.map(row => row.map(ch => (ch === '.' ? '.' : ch)));
   backtrack(0, workingGrid);
 
-  // Output result
   if (solutionCount === 1 && finalGrid) {
-    // Convert to string, replace digits with letters as filled
     const result = finalGrid.map(r => r.join('')).join('\n');
-    console.log(result);
-  } else {
-    console.log('Error');
+    return result;
   }
-}
-
-// If run as CLI, read from process args or stdin
-if (require.main === module) {
-  const [,, puzzleArg, wordsArg] = process.argv;
-  try {
-    const puzzle = puzzleArg;
-    const words = JSON.parse(wordsArg);
-    crosswordSolver(puzzle, words);
-  } catch (err) {
-    console.error('Error');
-  }
+  return 'Error';
 }
 
 module.exports = { crosswordSolver };
