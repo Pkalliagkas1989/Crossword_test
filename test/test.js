@@ -47,5 +47,9 @@ assert.strictEqual(crosswordSolver(puzzle3, words3), expect3);
 // Invalid puzzle
 assert.ok(crosswordSolver('', ['a']).startsWith('Error'));
 assert.ok(crosswordSolver('0001\n0..0\n3000\n0..0', ['a']).startsWith('Error'));
+// Invalid characters
+assert.ok(crosswordSolver("😀", ["hi"]).startsWith("Error"));
+assert.ok(crosswordSolver("1000", ["hí"]).startsWith("Error"));
+
 
 console.log('All tests passed.');

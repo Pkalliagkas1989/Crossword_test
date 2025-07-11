@@ -34,6 +34,9 @@ function crosswordSolver(puzzleStr, words) {
   if (puzzleStr.trim() === '') return 'Error: empty puzzle';
   if (words.some(w => typeof w !== 'string')) return 'Error: invalid words list';
   if (new Set(words).size !== words.length) return 'Error: duplicate words';
+  if (/[^0-9.\n]/.test(puzzleStr)) return 'Error: invalid puzzle characters';
+  const latinRegex = /^[A-Za-z]+$/;
+  if (words.some(w => !latinRegex.test(w))) return 'Error: invalid word characters';
 
   const rows = puzzleStr.split('\n').map(line => line.split(''));
   const height = rows.length;
